@@ -7,17 +7,28 @@ export async function login(prevState: any, formData: FormData) {
     const email = formData.get('email') as string
     const password = formData.get('password') as string
 
-    // Simple hardcoded check as requested by user
-    if ((email === 'admin@roguex.com' && password === '123') ||
-        (email === 'roguex' && password === '123') ||
-        (email === 'insano' && password === 'insanocapa') ||
-        (email === 'mrcrlq' && password === '1964f')) {
+    // Hardcoded credentials with roles
+    const users = [
+        { email: 'mrcfof@gmail.com', password: '1964f', role: 'admin', name: 'Mrcfof' },
+        { email: 'mrcrlq', password: '1964f', role: 'admin', name: 'Mrcrlq' }, // username as email field for simplicity
+        { email: 'insano', password: 'insano23', role: 'limited', name: 'Insano' }
+    ];
 
-        // Set a simple session cookie
+    const user = users.find(u => u.email === email && u.password === password);
+
+    if (user) {
+        // Set session cookie with user details
         const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
         const cookieStore = await cookies()
 
-        cookieStore.set('roguex_session', 'authenticated', {
+        const sessionData = JSON.stringify({
+            id: user.email,
+            name: user.name,
+            email: user.email,
+            role: user.role
+        });
+
+        cookieStore.set('roguex_session', sessionData, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             expires: expiresAt,

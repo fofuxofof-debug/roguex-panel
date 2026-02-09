@@ -31,6 +31,7 @@ const navItems = [
 interface User {
   id: string
   email?: string
+  role?: string
   user_metadata?: {
     name?: string
   }
@@ -51,6 +52,11 @@ export function DashboardShell({
     await logout()
   }
 
+  // Filter items based on role
+  const filteredNavItems = user.role === 'limited'
+    ? navItems.filter(item => ['/dashboard', '/dashboard/sessions', '/dashboard/keys'].includes(item.href))
+    : navItems;
+
   return (
     <div className="flex min-h-screen bg-background">
       {/* Desktop Sidebar */}
@@ -63,7 +69,7 @@ export function DashboardShell({
         </Link>
 
         <nav className="flex flex-1 flex-col gap-1 p-4">
-          {navItems.map((item, index) => {
+          {filteredNavItems.map((item, index) => {
             const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))
             return (
               <Link
@@ -126,7 +132,7 @@ export function DashboardShell({
         {mobileOpen && (
           <div className="border-b border-border bg-card p-4 md:hidden">
             <nav className="flex flex-col gap-1">
-              {navItems.map((item) => {
+              {filteredNavItems.map((item) => {
                 const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))
                 return (
                   <Link

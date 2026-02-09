@@ -15,13 +15,18 @@ export default async function DashboardLayout({
     redirect('/login')
   }
 
-  // Mock user for the shell
-  const user = {
-    id: 'admin',
-    email: 'admin@roguex.com',
-    user_metadata: {
-      name: 'Admin'
-    }
+  let user;
+
+  try {
+    user = JSON.parse(session.value);
+  } catch (e) {
+    // Fallback for old sessions or invalid data
+    user = {
+      id: 'admin',
+      email: 'admin@roguex.com',
+      role: 'admin',
+      user_metadata: { name: 'Admin' }
+    };
   }
 
   return <DashboardShell user={user as any}>{children}</DashboardShell>
